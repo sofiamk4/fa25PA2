@@ -91,22 +91,54 @@ int createLeafNodes(int freq[]) {
 int buildEncodingTree(int nextFree) {
     // TODO:
     // 1. Create a MinHeap object.
+    MinHeap encodingTree;
     // 2. Push all leaf node indices into the heap.
+    for (int i = 0; i < nextFree; i++) {
+        encodingTree.push(i, weightArr);
+    }
     // 3. While the heap size is greater than 1:
-    //    - Pop two smallest nodes
-    //    - Create a new parent node with combined weight
-    //    - Set left/right pointers
-    //    - Push new parent index back into the heap
+    while (encodingTree.size > 1) {
+        //    - Pop two smallest nodes
+        int left = encodingTree.pop(weightArr);
+        int right = encodingTree.pop(weightArr);
+        //    - Create a new parent node with combined weight
+        weightArr[nextFree] = weightArr[left] + weightArr[right];
+        //    - Set left/right pointers
+        leftArr[nextFree] = left;
+        rightArr[nextFree] = right;
+        //    - Push new parent index back into the heap
+        encodingTree.push(nextFree, weightArr);
+
+        nextFree++;
+    }
     // 4. Return the index of the last remaining node (root)
-    return -1; // placeholder
+    if (encodingTree.size == 0) {
+        return -1;
+    }
+
+    return encodingTree.pop(weightArr);
 }
 
 // Step 4: Use an STL stack to generate codes
 void generateCodes(int root, string codes[]) {
     // TODO:
     // Use stack<pair<int, string>> to simulate DFS traversal.
+    stack<pair<int, string>> s;
     // Left edge adds '0', right edge adds '1'.
     // Record code when a leaf node is reached.
+    s.push({root, codes[root]});
+
+    while (!s.empty()) {
+        pair<int, string> p = s.top();
+        s.pop();
+
+        int node = p.first;
+        string code = p.second;
+
+        if (leftArr[node] >= 0) {
+
+        }
+    }
 }
 
 // Step 5: Print table and encoded message

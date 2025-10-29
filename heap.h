@@ -17,7 +17,7 @@ struct MinHeap {
     void push(int idx, int weightArr[]) {
         // TODO: insert index at end of heap, restore order using upheap()
         // Check if index is a valid integer
-        if (size <= idx || idx < 0) {
+        if (idx < 0) {
             cout<<"Invalid index."<<endl;
             return;
         }
@@ -29,13 +29,13 @@ struct MinHeap {
         }
 
         // Insert index at end of heap
-        data[size] = weightArr[idx];
+        data[size] = idx;
 
         // Increment size of heap
         size++;
 
         // Restore order of heap calling upheap()
-        upheap(data[size - 1], weightArr);
+        upheap(size - 1, weightArr);
     }
 
     int pop(int weightArr[]) {
@@ -63,16 +63,58 @@ struct MinHeap {
         }
 
         // Restore order of heap calling downheap() and return smallest index
-        downheap(data[size], weightArr);
+        downheap(0, weightArr);
         return min;
     }
 
     void upheap(int pos, int weightArr[]) {
         // TODO: swap child upward while smaller than parent
+        // Check if position is valid
+        if (pos < 0 || pos > size) {
+            cout<<"Invalid index."<<endl;
+            return;
+        }
+
+        int child = pos;
+
+        // Loop while position is not 0, not at root
+        while (child > 0) {
+            // Calculate parent position
+            int parent = (child - 1) / 2;
+
+            // Compare weights
+            if (weightArr[data[child]] < weightArr[data[parent]]) {
+                swap(data[parent], data[child]);
+                child = parent;
+            }
+            else {
+                return;
+            }
+        }
     }
 
     void downheap(int pos, int weightArr[]) {
         // TODO: swap parent downward while larger than any child
+        int parent = pos;
+        int leftChild = parent * 2 + 1;
+
+        while (leftChild < size) {
+            int smallest = leftChild;
+            int rightChild = leftChild + 1;
+            if (rightChild < size) {
+                if (weightArr[data[rightChild]] < weightArr[data[parent]]) {
+                    smallest = rightChild;
+                }
+            }
+            if (weightArr[data[parent]] > weightArr[data[smallest]]) {
+                swap(data[parent], data[smallest]);
+                parent = smallest;
+                leftChild = 2 * parent + 1;
+            }
+            else {
+                return;
+            }
+        }
     }
 };
 
