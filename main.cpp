@@ -103,6 +103,7 @@ int buildEncodingTree(int nextFree) {
         int right = encodingTree.pop(weightArr);
         //    - Create a new parent node with combined weight
         weightArr[nextFree] = weightArr[left] + weightArr[right];
+        charArr[nextFree] = '*';
         //    - Set left/right pointers
         leftArr[nextFree] = left;
         rightArr[nextFree] = right;
@@ -126,7 +127,7 @@ void generateCodes(int root, string codes[]) {
     stack<pair<int, string>> s;
     // Left edge adds '0', right edge adds '1'.
     // Record code when a leaf node is reached.
-    s.push({root, codes[root]});
+    s.push({root, ""});
 
     while (!s.empty()) {
         pair<int, string> p = s.top();
@@ -136,7 +137,14 @@ void generateCodes(int root, string codes[]) {
         string code = p.second;
 
         if (leftArr[node] >= 0) {
-
+            s.push({leftArr[node], code + "0"});
+        }
+        else if (rightArr[node] >= 0) {
+            s.push({rightArr[node], code + "1"});
+        }
+        else {
+            char ch = charArr[node];
+            codes[ch - 'a'] = code;
         }
     }
 }
