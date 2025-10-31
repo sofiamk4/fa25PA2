@@ -16,11 +16,6 @@ struct MinHeap {
 
     void push(int idx, int weightArr[]) {
         // TODO: insert index at end of heap, restore order using upheap()
-        // Check if index is a valid integer
-        if (idx < 0) {
-            cout<<"Invalid index."<<endl;
-            return;
-        }
 
         // Check if heap is full
         if (size >= 64) {
@@ -45,7 +40,7 @@ struct MinHeap {
         // Check if heap is empty
         if (size == 0) {
             cout<<"Heap is empty."<<endl;
-            return 0;
+            return -1;
         }
 
         // Assign root to temp variable
@@ -72,9 +67,10 @@ struct MinHeap {
         // Check if position is valid
         if (pos < 0 || pos > size) {
             cout<<"Invalid index."<<endl;
-            return;
+             return;
         }
 
+        // Declare the child node as the current position
         int child = pos;
 
         // Loop while position is not 0, not at root
@@ -82,12 +78,16 @@ struct MinHeap {
             // Calculate parent position
             int parent = (child - 1) / 2;
 
-            // Compare weights
+            // Compare child and parent positions
             if (weightArr[data[child]] < weightArr[data[parent]]) {
-                swap(data[parent], data[child]);
+                // Swap positions if child is less than parent
+                int temp = data[child];
+                data[child] = data[parent];
+                data[parent] = temp;
                 child = parent;
             }
             else {
+                // Return once child is no longer less than parent
                 return;
             }
         }
@@ -95,23 +95,36 @@ struct MinHeap {
 
     void downheap(int pos, int weightArr[]) {
         // TODO: swap parent downward while larger than any child
+        // Declare parent as current position
         int parent = pos;
-        int leftChild = parent * 2 + 1;
+        // Declare left child
+        int leftChild = 2 * parent + 1;
 
+        // Loop while the left child is less than the size of heap
         while (leftChild < size) {
+            // Start by declaring smallest position as the left child
             int smallest = leftChild;
-            int rightChild = leftChild + 1;
+            // Declare right child
+            int rightChild = 2 * parent + 2;
+            // Compare right and left child if the right child is less than the size of the heap
             if (rightChild < size) {
-                if (weightArr[data[rightChild]] < weightArr[data[parent]]) {
+                if (weightArr[data[rightChild]] < weightArr[data[leftChild]]) {
+                    // Set smallest position as the right child if the left child is greater
                     smallest = rightChild;
                 }
             }
+            // Now compare parent with the actual smallest child
             if (weightArr[data[parent]] > weightArr[data[smallest]]) {
-                swap(data[parent], data[smallest]);
+                // Swap parent and smallest child if parent is greater
+                int temp = data[smallest];
+                data[smallest] = data[parent];
+                data[parent] = temp;
                 parent = smallest;
+                // Update left child to reflect new parent position and loop again
                 leftChild = 2 * parent + 1;
             }
             else {
+                // Return once the parent is no longer greater than the smallest child
                 return;
             }
         }

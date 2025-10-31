@@ -91,32 +91,47 @@ int createLeafNodes(int freq[]) {
 int buildEncodingTree(int nextFree) {
     // TODO:
     // 1. Create a MinHeap object.
-    MinHeap encodingTree;
     // 2. Push all leaf node indices into the heap.
+    // 3. While the heap size is greater than 1:
+    //    - Pop two smallest nodes
+    //    - Create a new parent node with combined weight
+    //    - Set left/right pointers
+    //    - Push new parent index back into the heap
+    // 4. Return the index of the last remaining node (root)
+
+    // Create a MinHeap object
+    MinHeap encodingTree;
+
+    // Loop through all leaf nodes (recorded by next free)
     for (int i = 0; i < nextFree; i++) {
+        // Push each leaf node into MinHeap
         encodingTree.push(i, weightArr);
     }
-    // 3. While the heap size is greater than 1:
+
+    // Loop through MinHeap while size is greater than 1
     while (encodingTree.size > 1) {
-        //    - Pop two smallest nodes
+        // Pop and store left child first (first element will be less than second)
         int left = encodingTree.pop(weightArr);
+        // Pop and store right child
         int right = encodingTree.pop(weightArr);
-        //    - Create a new parent node with combined weight
+        // Create parent node with the combined weight
         weightArr[nextFree] = weightArr[left] + weightArr[right];
-        charArr[nextFree] = '*';
-        //    - Set left/right pointers
+        // Set left and right pointers
         leftArr[nextFree] = left;
         rightArr[nextFree] = right;
-        //    - Push new parent index back into the heap
+        // Push new parent index back into heap
         encodingTree.push(nextFree, weightArr);
 
+        // Increment number of nodes
         nextFree++;
     }
-    // 4. Return the index of the last remaining node (root)
+
+    // If the MinHeap is empty return invalid index
     if (encodingTree.size == 0) {
         return -1;
     }
 
+    // Return the index of the root otherwise
     return encodingTree.pop(weightArr);
 }
 
@@ -124,25 +139,39 @@ int buildEncodingTree(int nextFree) {
 void generateCodes(int root, string codes[]) {
     // TODO:
     // Use stack<pair<int, string>> to simulate DFS traversal.
-    stack<pair<int, string>> s;
     // Left edge adds '0', right edge adds '1'.
     // Record code when a leaf node is reached.
+
+    // Declare stack<pair<int, string>>
+    stack<pair<int, string>> s;
+
+    // Create element to start traversal
     s.push({root, ""});
 
+    // Loop while stack s has elements
     while (!s.empty()) {
+        // Store top pair as p
         pair<int, string> p = s.top();
+        // Remove first element
         s.pop();
 
+        // Store the int and string stored in pair as individual variables
         int node = p.first;
         string code = p.second;
 
+        // If node is stored in the left array
         if (leftArr[node] >= 0) {
+            // Push node into stack with 0 added
             s.push({leftArr[node], code + "0"});
         }
-        else if (rightArr[node] >= 0) {
+        // If node is stored in the right array
+        if (rightArr[node] >= 0) {
+            // Push node into stack with 1 added
             s.push({rightArr[node], code + "1"});
         }
-        else {
+        // If node is in neither array (leaf node)
+        if (leftArr[node] < 0 && rightArr[node] < 0) {
+            // Record code
             char ch = charArr[node];
             codes[ch - 'a'] = code;
         }
